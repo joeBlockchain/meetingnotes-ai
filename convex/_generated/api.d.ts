@@ -14,7 +14,8 @@ import type {
   FilterApi,
   FunctionReference,
 } from "convex/server";
-import type * as meetings from "../meetings.js";
+import type * as chat from "../chat.js";
+import type * as meetings from "../chat.js";
 
 /**
  * A utility for referencing Convex functions in your app's API.
@@ -25,6 +26,7 @@ import type * as meetings from "../meetings.js";
  * ```
  */
 declare const fullApi: ApiFromModules<{
+  chat: typeof chat;
   meetings: typeof meetings;
 }>;
 export declare const api: FilterApi<
