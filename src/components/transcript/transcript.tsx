@@ -1,5 +1,9 @@
 "use client";
 
+// import reaxt stuff
+import { useState, useEffect } from "react";
+
+//import convex db stuff
 import { useMutation, useQuery, useAction } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 

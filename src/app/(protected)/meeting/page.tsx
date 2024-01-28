@@ -3,7 +3,7 @@
 //import for authentication
 import { useSession } from "@clerk/nextjs";
 
-//next imports
+//nextjs and react imports
 import Link from "next/link";
 import { useState } from "react"; // Import useState
 
@@ -25,23 +25,24 @@ import {
 // import custom components
 import Chat from "@/components/chat/chat";
 import Transcript from "@/components/transcript/transcript";
+import AudioRecorder from "@/components/transcript/audio-recorder";
 
 const MeetingPage = () => {
   const { isSignedIn, isLoaded } = useSession();
+  // convex functions for db
+  const meetings = useQuery(api.meetings.getMeetingsForUser);
+  const createMeeting = useMutation(api.meetings.createMeeting);
+
+  const [selectedMeetingID, setSelectedMeetingID] = useState<string | null>(
+    null
+  );
+
   if (!isSignedIn) {
     return <div>Checking credentials...</div>;
   }
   if (!isLoaded) {
     return <div>Loading...</div>;
   }
-
-  const [selectedMeetingID, setSelectedMeetingID] = useState<string | null>(
-    null
-  ); // Add state for selectedMeetingID
-
-  // convex functions for db
-  const meetings = useQuery(api.meetings.getMeetingsForUser);
-  const createMeeting = useMutation(api.meetings.createMeeting);
 
   return (
     <main className="mt-4">
@@ -60,7 +61,7 @@ const MeetingPage = () => {
             </Button>
             {meetings?.map((meeting) => {
               return (
-                <div key={meetings._id} className="">
+                <div key={meeting._id} className="">
                   <Card>
                     <CardHeader>
                       <CardTitle>{meeting.title}</CardTitle>
@@ -82,16 +83,15 @@ const MeetingPage = () => {
               );
             })}
           </div>
+          {/* show the transcript */}
           {selectedMeetingID && (
-            <Transcript
-              meetingID={selectedMeetingID}
-              className="m-4 w-1/4"
-            ></Transcript>
+            <div className="flex flex-col">
+              <AudioRecorder />
+              <Transcript meetingID={selectedMeetingID} />
+            </div>
           )}
           {/* show the chat */}
-          {selectedMeetingID && (
-            <Chat meetingID={selectedMeetingID} className="w-1/4"></Chat>
-          )}
+          {selectedMeetingID && <Chat meetingID={selectedMeetingID}></Chat>}
         </div>
       )}
     </main>
