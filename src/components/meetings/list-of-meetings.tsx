@@ -1,7 +1,11 @@
 "use client";
 
+// import convex stuff for db
 import { useMutation, useQuery, useAction } from "convex/react";
 import { api } from "../../../convex/_generated/api";
+import type { Doc, Id } from "../../../convex/_generated/dataModel";
+
+// import shadcnui stuff
 import { Button } from "@/components/ui/button";
 
 export default function ListOfMeetings({} //   PageProps,
@@ -22,7 +26,7 @@ export default function ListOfMeetings({} //   PageProps,
       </Button>
       {meetings?.map((meeting) => {
         return (
-          <div key={meetings._id} className="flex flex-col">
+          <div key={meeting._id} className="flex flex-col">
             <div className="m-4">{meeting.title}</div>
           </div>
         );

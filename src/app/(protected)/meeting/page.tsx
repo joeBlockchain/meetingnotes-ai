@@ -10,6 +10,7 @@ import { useState } from "react"; // Import useState
 //convex imports
 import { useMutation, useQuery, useAction } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
+import type { Doc, Id } from "../../../../convex/_generated/dataModel";
 
 // shadcnui imports
 import { Button } from "@/components/ui/button";
@@ -27,15 +28,14 @@ import Chat from "@/components/chat/chat";
 import Transcript from "@/components/transcript/transcript";
 import AudioRecorder from "@/components/transcript/audio-recorder";
 
-const MeetingPage = () => {
+export default function MeetingPage() {
   const { isSignedIn, isLoaded } = useSession();
   // convex functions for db
   const meetings = useQuery(api.meetings.getMeetingsForUser);
   const createMeeting = useMutation(api.meetings.createMeeting);
 
-  const [selectedMeetingID, setSelectedMeetingID] = useState<string | null>(
-    null
-  );
+  const [selectedMeetingID, setSelectedMeetingID] =
+    useState<Id<"meetings"> | null>(null);
 
   if (!isSignedIn) {
     return <div>Checking credentials...</div>;
@@ -96,6 +96,4 @@ const MeetingPage = () => {
       )}
     </main>
   );
-};
-
-export default MeetingPage;
+}

@@ -1,10 +1,11 @@
 "use client";
 
-//import for authentication
+// import for authentication
 import { useSession } from "@clerk/nextjs";
 
 //next imports
 import Link from "next/link";
+import React, { useState } from "react";
 
 //convex imports
 import { useMutation, useQuery, useAction } from "convex/react";
@@ -13,18 +14,22 @@ import { api } from "../../../../convex/_generated/api";
 // shadcnui imports
 import { Button } from "@/components/ui/button";
 
-const MeetingPage = () => {
+export default function MeetingsPage() {
   const { isSignedIn, isLoaded } = useSession();
+  // convex functions for db
+  const meetings = useQuery(api.meetings.getMeetingsForUser);
+  const createMeeting = useMutation(api.meetings.createMeeting);
+
+  const [selectedMeetingID, setSelectedMeetingID] = useState<string | null>(
+    null
+  );
+
   if (!isSignedIn) {
     return <div>Checking credentials...</div>;
   }
   if (!isLoaded) {
     return <div>Loading...</div>;
   }
-
-  const meetings = useQuery(api.meetings.getMeetingsForUser);
-  const createMeeting = useMutation(api.meetings.createMeeting);
-
   return (
     <main className="mt-4">
       {isSignedIn && (
@@ -41,7 +46,7 @@ const MeetingPage = () => {
           </Button>
           {meetings?.map((meeting) => {
             return (
-              <div key={meetings._id} className="">
+              <div key={meeting._id} className="">
                 <Button className="">
                   Title: {meeting.title} ID: {meeting._id}
                 </Button>
@@ -52,6 +57,6 @@ const MeetingPage = () => {
       )}
     </main>
   );
-};
+}
 
-export default MeetingPage;
+MeetingsPage;

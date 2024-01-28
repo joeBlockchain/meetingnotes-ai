@@ -23,6 +23,10 @@ export const sendMessage = action({
       meetingID: args.meetingID,
     });
 
+    if (Array.isArray(messageId)) {
+      throw new Error("Message ID should not be an array");
+    }
+
     const completion = await openai.chat.completions.create({
       messages: [{ role: "user", content: args.message }],
       model: "gpt-3.5-turbo",
@@ -39,9 +43,9 @@ export const sendMessage = action({
         completionTokens++;
 
         await ctx.runMutation(api.chat.updateAIResponse, {
-          messageId,
-          aiResponse,
-          completionTokens,
+          messageId: messageId,
+          aiResponse: aiResponse,
+          completionTokens: completionTokens,
         });
       }
     }
@@ -58,6 +62,7 @@ export const storeMessages = mutation({
     aiResponse: v.string(),
     completionTokens: v.number(),
     promptTokens: v.number(),
+    meetingID: v.string(),
   },
   handler: async (ctx, args) => {
     const user = await ctx.auth.getUserIdentity();
@@ -72,6 +77,8 @@ export const storeMessages = mutation({
       aiResponse: args.aiResponse,
       completionTokens: args.completionTokens,
       promptTokens: args.promptTokens,
+      //@ts-ignore
+      meetingID: v.string(),
     });
   },
 });
@@ -91,6 +98,7 @@ export const storeMessagesStreaming = mutation({
 
     const messageId = await ctx.db.insert("messages", {
       userId: user.subject,
+      //@ts-ignore
       meetingID: args.meetingID,
       userMessage: args.userMessage,
       aiResponse: "", // Initially empty, to be updated as the AI response streams in
@@ -109,6 +117,7 @@ export const updateAIResponse = mutation({
     completionTokens: v.number(),
   },
   handler: async (ctx, args) => {
+    //@ts-ignore
     await ctx.db.patch(args.messageId, {
       aiResponse: args.aiResponse,
       completionTokens: args.completionTokens,
@@ -119,7 +128,7 @@ export const updateAIResponse = mutation({
 //works for streaming=false
 export const getMessagesForUser = query({
   args: {
-    meetingID: v.string(), // Add meetingID as an argument
+    meetingID: v.id("meetings"), // Add meetingID as an argument
   },
   handler: async (ctx, args) => {
     const user = await ctx.auth.getUserIdentity();

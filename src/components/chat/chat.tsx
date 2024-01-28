@@ -2,6 +2,7 @@
 
 import { useMutation, useQuery, useAction } from "convex/react";
 import { api } from "../../../convex/_generated/api";
+import type { Doc, Id } from "../../../convex/_generated/dataModel";
 
 export default function ChatCompletion({
   //   finalizedSentences,
@@ -10,7 +11,7 @@ export default function ChatCompletion({
 }: {
   //   finalizedSentences: SentenceData[];
   //   speakers: SpeakerData[];
-  meetingID?: string;
+  meetingID: Id<"meetings">;
 }) {
   const messages = useQuery(api.chat.getMessagesForUser, { meetingID });
 
